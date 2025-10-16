@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🌦 Weather Finder</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button id="searchBtn">Get Weather</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const apiKey = "49143b528e9f4519926102731251610"; // ✅ Only key, not full URL
+    const searchBtn = document.getElementById("searchBtn");
+    const resultDiv = document.getElementById("result");
+
+    searchBtn.addEventListener("click", () => {
+      const city = document.getElementById("cityInput").value;
+      if (city.trim() === "") {
+        resultDiv.innerHTML = "<p>Please enter a city name.</p>";
+        return;
+      }
+
+      // ✅ Using WeatherAPI endpoint
+      fetch(`https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=yes`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.error) {
+            resultDiv.innerHTML = `<p>${data.error.message}</p>`;
+          } else {
+            resultDiv.innerHTML = `
+              <h2>${data.location.name}, ${data.location.country}</h2>
+              <img src="${data.current.condition.icon}" alt="weather icon">
+              <p>🌡 Temperature: ${data.current.temp_c} °C</p>
+              <p>🌤 Condition: ${data.current.condition.text}</p>
+              <p>💨 Wind Speed: ${data.current.wind_kph} km/h</p>
+              <p>💧 Humidity: ${data.current.humidity}%</p>
+            `;
+          }
+        })
+        .catch(() => {
+          resultDiv.innerHTML = "<p>Error fetching data.</p>";
+        });
+    });
+  </script>
+</body>
+</html>
